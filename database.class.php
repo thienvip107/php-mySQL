@@ -33,7 +33,7 @@
 
         // INSERT DATA
 
-        public function insert($data,$type ){
+        public function insert($data,$type='single' ){
             if($type == 'single'){
                 $newQuery 	= $this->createInsertSQL($data);
                 $query 		= "INSERT INTO `$this->table`(".$newQuery['col'].") VALUES (".$newQuery['row'].")";
@@ -94,7 +94,7 @@
 
             }
             $where = implode(" ",$where);
-            echo $where;
+          
             return $where;
         }
 
@@ -126,37 +126,45 @@
             return $this->resultQuery;
         }
 
-        public function listRecord($resultQuery=null){
+        public function listRecord($query){
             $result = array();
-            $resultQuery = ($resultQuery == null) ? $this->resultQuery : $resultQuery;
-            if(mysqli_num_rows($resultQuery) > 0){
+            if(!empty($query)){
+                $resultQuery = $this->query($query);
+                 if(mysqli_num_rows($resultQuery) > 0){
                 while($row = mysqli_fetch_assoc($resultQuery)){
                     $result[] = $row;
                 }
                 mysqli_free_result($resultQuery);
             }
-
-            
-            
+            }           
             return $result;
         }
         
 
-        public function singleRecord($resultQuery=null){
+        public function singleRecord($query){
             $result =array();
-            $resultQuery = ($resultQuery ==null) ?$this->resultQuery : $resultQuery;
-            if(mysqli_num_rows($resultQuery)>0){
-                $result = mysqli_fetch_assoc($resultQuery);
+            if(!empty($query)){
+                $resultQuery=$this->query($query);
+                 if(mysqli_num_rows($resultQuery)>0){
+                    $result = mysqli_fetch_assoc($resultQuery);
                    
-                mysqli_free_result($resultQuery);
+                    mysqli_free_result($resultQuery);
                 }
                  return $result;
             }
-            
+            }
            
-
+            //EXIST
+            public function isExist($query){
+            if($query != null){
+                $this->resultQuery = $this->query($query);
+            }
+            if(mysqli_num_rows($this->resultQuery) >0)return true;
+            return false;
+        }
         }
 
+        
     
 
 
